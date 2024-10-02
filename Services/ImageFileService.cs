@@ -12,6 +12,12 @@ public class ImageFileService : IImageService {
     public Image Create(Image img) {
         throw new NotImplementedException();
     }
+
+    public Image Create(ImageDTO img)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool Delete(int id) {
       List<Image> images = (List<Image>)GetAll();
       Image? imageToDelete =  images.Find(img => img.Id == id.ToString()); // Busca el libro por id y lo retorna, si no lo encuentra retorna null.
@@ -33,6 +39,12 @@ public class ImageFileService : IImageService {
       List<Image> images = (List<Image>)GetAll();
       return images.Find(img => img.Id == id.ToString()); // Busca el libro por id y lo retorna, si no lo encuentra retorna null. 
     }
+
+    public Image? GetById(int idSong, int idInternal)
+    {
+        throw new NotImplementedException();
+    }
+
     public Boolean Update(int id, Image img) {
       List<Image> images = (List<Image>)GetAll();
       int index = images.FindIndex(img => img.Id == id.ToString()); //Busca el indice del id que se quiere actualizar, si no lo encuentra devuelve -1. 
@@ -43,7 +55,13 @@ public class ImageFileService : IImageService {
       _fileStorageService.Write(_filePath, JsonSerializer.Serialize(images));
       return true;
     }
-    Image IImageService.Update(int idSong, int idInternal, Image img)
+
+    public Image Update(int idInternal, int idSong, ImageDTO img)
+    {
+        throw new NotImplementedException();
+    }
+
+    Image IImageService.Update(int idSong, int idInternal, ImageDTO img)
     {
         throw new NotImplementedException();
     }
