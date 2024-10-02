@@ -28,7 +28,7 @@ public class SongDbService : ISongService {
         return s;
     }
     public IEnumerable<Image> GetImages(int id) {
-        Song s = _context.Songs.Include(i => i.Images).FirstOrDefault(x => x.Id == id);
+        Song s = _context.Songs.FirstOrDefault(x => x.Id == id);
         return s.Images;
     }
 }

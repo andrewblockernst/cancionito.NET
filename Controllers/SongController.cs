@@ -16,8 +16,8 @@ public class SongsController : ControllerBase {
   }
     
   [HttpGet("{idSong}/images")]
-  public ActionResult<List<Image>> GetImages(int id) {
-    var img = _songsService.GetImages(id);
+  public ActionResult<List<Image>> GetImages(int idSong) {
+    var img = _songsService.GetImages(idSong);
     return Ok(img);
   }
 
