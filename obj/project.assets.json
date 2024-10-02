@@ -6090,27 +6090,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\andre\\.nuget\\packages\\": {}
+    "C:\\Users\\Juampi\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "A:\\Documents SSD\\UAP\\2° AÑO\\Segundo cuatrimestre\\programacion-2\\csharp\\cancionito\\cancionito.csproj",
+      "projectUniqueName": "E:\\Documentos\\dev\\cancionito.NET\\cancionito.csproj",
       "projectName": "cancionito",
-      "projectPath": "A:\\Documents SSD\\UAP\\2° AÑO\\Segundo cuatrimestre\\programacion-2\\csharp\\cancionito\\cancionito.csproj",
-      "packagesPath": "C:\\Users\\andre\\.nuget\\packages\\",
-      "outputPath": "A:\\Documents SSD\\UAP\\2° AÑO\\Segundo cuatrimestre\\programacion-2\\csharp\\cancionito\\obj\\",
+      "projectPath": "E:\\Documentos\\dev\\cancionito.NET\\cancionito.csproj",
+      "packagesPath": "C:\\Users\\Juampi\\.nuget\\packages\\",
+      "outputPath": "E:\\Documentos\\dev\\cancionito.NET\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\andre\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\Juampi\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -6180,7 +6177,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.402/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
