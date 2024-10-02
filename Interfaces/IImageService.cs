@@ -3,5 +3,5 @@ public interface IImageService {
   public Image? GetById(int id);
   public Image Create(Image img);
   public bool Delete(int id);
-  public Image Update(int id, Image img);
+  public Image Update(int idInternal, int idSong, Image img);
 }

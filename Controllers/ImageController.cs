@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/images")]
 public class ImageController : ControllerBase {
     private readonly IImageService _imageService;
-    private readonly ISongsService _songsService;
-    public ImageController(IImageService imageService, ISongsService songService) {
+    private readonly ISongService _songsService;
+    public ImageController(IImageService imageService, ISongService songService) {
       _imageService = imageService;
       _songsService = songService;
     }
 
     [HttpGet]
-    public ActionResult<List<Image>> GetAll() {
+    public ActionResult<List<Image>> GetAllImages() {
       try {
         return Ok(_imageService.GetAll());
       }
@@ -29,21 +29,21 @@ public class ImageController : ControllerBase {
     }
 
     [HttpPost]
-    public ActionResult<Image> NuevoImage(Image img) {
+    public ActionResult<Image> NewImage(Image img) {
       Image Image = _imageService.Create(img);
-      return CreatedAtAction(nameof(GetById), new { id = Image.Id}, Image);
+      return img;
     }
 
-    [HttpPut("{id}")]
-    public ActionResult<Image> Update(int id, Image img) {
+    [HttpPut("{SongId}/{InternalId}")]
+    public ActionResult<Image> Update(int idSong, int idInternal, Image img) {
       try {
-        Image Image = _imageService.Update(id, img);
-        if ( Image is null ) return NotFound(new {Message = $"No se pudo actualizar el Image con ID: {id}"});
-        return CreatedAtAction(nameof(GetById), new { id = Image.Id}, Image);
+        Image Image = _imageService.Update(idInternal, idSong, img);
+        if ( Image is null ) return NotFound(new {Message = $"No se pudo actualizar el Image con los ID: {idSong} y {idInternal}"});
+        return img;
       }
       catch (System.Exception e) {
         Console.WriteLine(e.Message);
-        return Problem(detail: e.Message, statusCode: 500);
+        return img;
       }
     }
 

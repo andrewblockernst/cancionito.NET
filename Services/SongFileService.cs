@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-public class SongFileService : ISongsService {
+public class SongFileService : ISongService {
     private readonly string _filePath = "Data/Songs.json";
     private readonly IFileStorageService _fileStorageService;
 
@@ -55,7 +55,7 @@ public class SongFileService : ISongsService {
     }
 
     public IEnumerable<Image> GetImages(int id) {
-        throw new NotImplementedException();
+        throw new System.NotImplementedException();
     }
     public Song? Update(int id, Song song) {
          // Leer el contenido del archivo JSON
