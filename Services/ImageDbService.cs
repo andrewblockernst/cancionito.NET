@@ -4,16 +4,24 @@ public class ImageDbService : IImageService {
     public ImageDbService(CancionitoContext context) {
         _context = context;
     }
-    public Image Create(ImageDTO img) {
-        var NewImage = new Image(){
-            InternalId = img.InternalId,
-            SongId = img.SongId,
-            Url = img.Url
-        }; //REVISAR CON EL MODELO DE IMAGEN (CONSTRUCTOR, ETC)
-        _context.Add(NewImage);
-        _context.SaveChanges();
-        return NewImage;
+public Image Create(ImageDTO img) {
+    // Verificar si la canción existe en la base de datos
+    var song = _context.Songs.Find(img.SongId);
+    if (song == null) {
+        throw new Exception("Invalid SongId, song does not exist.");
     }
+    // Crear la nueva imagen
+    var NewImage = new Image(){
+        InternalId = img.InternalId,
+        SongId = img.SongId,
+        Url = img.Url 
+    };
+    // Guardar la imagen en la base de datos
+    _context.Images.Add(NewImage);
+    _context.SaveChanges();
+
+    return NewImage;
+}
     public bool Delete(int id) {
         Image? img = _context.Images.Find(id);
         if (img is null) return false;
@@ -22,7 +30,7 @@ public class ImageDbService : IImageService {
         return true;
     }
     public IEnumerable<Image> GetAll() {
-        return _context.Images.Include(el => el.Song);
+        return _context.Images;
     }
     public Image? GetById(int idSong, int idInternal) {
         return _context.Images

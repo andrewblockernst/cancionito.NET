@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/images")]
 public class ImageController : ControllerBase {
     private readonly IImageService _imageService;
-    private readonly ICloudinaryService _cloudinaryService;
-    public ImageController(IImageService imageService, ICloudinaryService cloudinaryService) {
+    //private readonly ICloudinaryService _cloudinaryService;
+    public ImageController(IImageService imageService/*, ICloudinaryService cloudinaryService*/) {
       _imageService = imageService;
-      _cloudinaryService = cloudinaryService;
+      //_cloudinaryService = cloudinaryService;
     }
 
     [HttpGet]
@@ -21,9 +21,9 @@ public class ImageController : ControllerBase {
       }
     }
 
-    [HttpGet("{SongId}/{InternalId}")]
+    [HttpGet("{idSong}/{idInternal}")]
     public ActionResult<Image> GetById(int idSong, int idInternal) {
-      Image? Image = _imageService.GetById(idSong, idInternal);
+      var Image = _imageService.GetById(idSong, idInternal);
       if ( Image is null ) return NotFound();
       return Ok(Image);
     }
@@ -34,7 +34,7 @@ public class ImageController : ControllerBase {
       return CreatedAtAction(nameof(GetById), new { idSong = _img.SongId, idInternal = _img.InternalId}, _img);
     }
 
-    [HttpPut("{SongId}/{InternalId}")]
+    [HttpPut("{idSong}/{idInternal}")]
     public ActionResult<Image> Update(int idSong, int idInternal, ImageDTO img) {
       try {
         Image _img = _imageService.Update(idInternal, idSong, img);
