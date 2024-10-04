@@ -11,11 +11,19 @@ public class SongDbService : ISongService {
         _context.SaveChanges();
         return NewSong;
     }
-    public void Delete(int id) {
-        var s = _context.Songs.Find(id);
+    public void Delete(int id)
+{
+    Song? s = _context.Songs.Find(id);
+    if (s is not null)
+    {
+        _context.Images
+            .Where(x => x.SongId == id)
+            .ToList()
+            .ForEach(x => _context.Images.Remove(x));
         _context.Songs.Remove(s);
         _context.SaveChanges();
     }
+}
     public IEnumerable<Song> GetAll() {
         return _context.Songs; 
     }

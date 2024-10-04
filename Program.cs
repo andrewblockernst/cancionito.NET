@@ -13,8 +13,9 @@ cloudinary.Api.Secure = true;
 var builder = WebApplication.CreateBuilder(args);
 
 // Inyección de dependencias
-builder.Services.AddSingleton(cloudinary); // Inyecta la instancia de Cloudinary
-builder.Services.AddScoped<CloudinaryService>(); // Inyecta el servicio CloudinaryService
+//===========================
+builder.Services.AddSingleton<Cloudinary>(cloudinary); // Agregar esta línea
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -23,7 +24,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSqlite<CancionitoContext>(builder.Configuration.GetConnectionString("cnCancionito"));
 builder.Services.AddScoped<ISongService, SongDbService>();
 builder.Services.AddScoped<IImageService, ImageDbService>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
