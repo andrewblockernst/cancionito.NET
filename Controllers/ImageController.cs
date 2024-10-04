@@ -30,7 +30,7 @@ public class ImageController : ControllerBase {
 
     [HttpPost]
     public ActionResult<Image> NewImage(ImageDTO img) {
-      _cloudinaryService.UploadImage(img.Url);
+      _cloudinaryService.AddToCloudinary(img.Url);
       Image _img = _imageService.Create(img);
       return CreatedAtAction(nameof(GetById), new { idSong = _img.SongId, idInternal = _img.InternalId}, _img);
     }
