@@ -1,7 +1,7 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 
-public class CloudinaryService : ICloudinaryService{
+public class CloudinaryService : ICloudinaryService {
     private readonly Cloudinary _cloudinary;
 
     public CloudinaryService(Cloudinary cloudinary) {
@@ -34,12 +34,16 @@ public class CloudinaryService : ICloudinaryService{
 
     throw new Exception("Error al eliminar la imagen de Cloudinary.");
     }
-
-    public string UploadImage(string? url)
+    public string UploadImage(string? imageUrl) {
+    var uploadParams = new ImageUploadParams()
     {
-        throw new NotImplementedException();
-    }
+        File = new FileDescription(imageUrl)
+    };
 
+    var uploadResult = _cloudinary.Upload(uploadParams);
+
+    return uploadResult.PublicId;
+    }
     private string ExtractPublicIdFromUrl(string imageUrl) {
         // Parseamos la URL para obtener el public_id
         var uri = new Uri(imageUrl);

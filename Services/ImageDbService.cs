@@ -22,13 +22,15 @@ public Image Create(ImageDTO img) {
 
     return NewImage;
 }
-    public bool Delete(int id) {
-        Image? img = _context.Images.Find(id);
-        if (img is null) return false;
-        _context.Images.Remove(img);
-        _context.SaveChanges();
-        return true;
-    }
+    public bool Delete(int idInternal, int idSong) {
+    Image? img = _context.Images
+        .FirstOrDefault(x => x.InternalId == idInternal && x.SongId == idSong);
+    if (img is null) return false;
+    _context.Images.Remove(img);
+    _context.SaveChanges();
+    return true;
+}
+
     public IEnumerable<Image> GetAll() {
         return _context.Images;
     }

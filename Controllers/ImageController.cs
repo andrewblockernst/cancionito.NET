@@ -49,8 +49,8 @@ public class ImageController : ControllerBase {
     }
 
     [HttpDelete]
-    public ActionResult Delete(int id) {
-      bool deleted = _imageService.Delete(id);
+    public ActionResult Delete(int InternalId, int SongId) {
+      bool deleted = _imageService.Delete(InternalId, SongId);
       if (deleted) return NoContent();
       return NotFound();
     }
