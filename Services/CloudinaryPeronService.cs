@@ -1,22 +1,29 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 
-public class CloudinaryService : ICloudinaryService {
+public class CloudinaryPeronService : ICloudinaryPeronService {
     private readonly Cloudinary _cloudinary;
 
-    public CloudinaryService(Cloudinary cloudinary) {
-        _cloudinary = cloudinary;
+    public CloudinaryPeronService(Cloudinary cloudinary) {
+        _cloudinary = cloudinary ?? throw new ArgumentNullException(nameof(cloudinary));;
     }
 
     public string AddToCloudinary(string imageUrl) {
+        if (_cloudinary == null) {
+            throw new InvalidOperationException("La instancia de Cloudinary no ha sido inicializada.");
+        }
+
         var uploadParams = new ImageUploadParams {
-            File = new FileDescription(imageUrl) // Subir la imagen desde la URL proporcionada
+            File = new FileDescription(imageUrl), // Subir la imagen desde la URL proporcionada
+            PublicId = "arroz chaufa",
+            QualityAnalysis = false,
+            Colors = false,        
+            Categorization = "google_tagging"
         };
 
         var uploadResult = _cloudinary.Upload(uploadParams);
-
         // Retornar la nueva URL de la imagen alojada en Cloudinary
-        return uploadResult?.SecureUrl?.ToString();
+        return uploadResult?.SecureUrl?.ToString() ?? throw new InvalidOperationException("El resultado de la carga de imagen es nulo.");;
     }
     
     public string DeleteFromCloudinary(string imageUrl) {

@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/images")]
 public class ImageController : ControllerBase {
     private readonly IImageService _imageService;
-    private readonly ICloudinaryService _cloudinaryService;
-    public ImageController(IImageService imageService, ICloudinaryService cloudinaryService) {
-      _imageService = imageService;
-      _cloudinaryService = cloudinaryService;
+    private readonly ICloudinaryPeronService _cloudinaryService;
+    public ImageController(ICloudinaryPeronService cloudinaryService, IImageService imageService) {
+        _cloudinaryService = cloudinaryService ?? throw new ArgumentNullException(nameof(cloudinaryService));
+        _imageService = imageService ?? throw new ArgumentNullException(nameof(imageService));
     }
 
     [HttpGet]
@@ -30,8 +30,17 @@ public class ImageController : ControllerBase {
 
     [HttpPost]
     public ActionResult<Image> NewImage(ImageDTO img) {
-      _cloudinaryService.AddToCloudinary(img.Url);
-      Image _img = _imageService.Create(img);
+      if (img == null || string.IsNullOrEmpty(img.Url)) {
+        return BadRequest("La URL de la imagen no puede estar vacía.");
+      }
+      var new_url = _cloudinaryService.AddToCloudinary(img.Url);
+      // Crear la nueva imagen
+      var newImage = new ImageDTO(){
+          InternalId = img.InternalId,
+          SongId = img.SongId,
+          Url = new_url
+      };
+      Image _img = _imageService.Create(newImage);
       return CreatedAtAction(nameof(GetById), new { idSong = _img.SongId, idInternal = _img.InternalId}, _img);
     }
 

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public interface ICloudinaryService
+public interface ICloudinaryPeronService
 {
     string AddToCloudinary(string imageUrl);
     string DeleteFromCloudinary(string imageUrl);
