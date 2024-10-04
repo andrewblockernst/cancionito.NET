@@ -1,7 +1,7 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 
-public class CloudinaryService {
+public class CloudinaryService : ICloudinaryService{
     private readonly Cloudinary _cloudinary;
 
     public CloudinaryService(Cloudinary cloudinary) {
@@ -33,6 +33,11 @@ public class CloudinaryService {
     }
 
     throw new Exception("Error al eliminar la imagen de Cloudinary.");
+    }
+
+    public string UploadImage(string? url)
+    {
+        throw new NotImplementedException();
     }
 
     private string ExtractPublicIdFromUrl(string imageUrl) {
