@@ -46,4 +46,6 @@ public Image Create(ImageDTO img) {
         _context.SaveChanges();
         return imageUpdate;
     }
+
+    
 }

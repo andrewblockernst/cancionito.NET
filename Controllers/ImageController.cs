@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/images")]
 public class ImageController : ControllerBase {
     private readonly IImageService _imageService;
-    //private readonly ICloudinaryService _cloudinaryService;
-    public ImageController(IImageService imageService/*, ICloudinaryService cloudinaryService*/) {
+    private readonly ICloudinaryService _cloudinaryService;
+    public ImageController(IImageService imageService, ICloudinaryService cloudinaryService) {
       _imageService = imageService;
-      //_cloudinaryService = cloudinaryService;
+      _cloudinaryService = cloudinaryService;
     }
 
     [HttpGet]
@@ -30,6 +30,7 @@ public class ImageController : ControllerBase {
 
     [HttpPost]
     public ActionResult<Image> NewImage(ImageDTO img) {
+      _cloudinaryService.UploadImage(img.Url);
       Image _img = _imageService.Create(img);
       return CreatedAtAction(nameof(GetById), new { idSong = _img.SongId, idInternal = _img.InternalId}, _img);
     }
