@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("cancionito")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+73a8dac2aabdfab189c105914ccac398e1b8eef4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+edf770c32f332557e2ab68d2d008b96d1fc34bc3")]
 [assembly: System.Reflection.AssemblyProductAttribute("cancionito")]
 [assembly: System.Reflection.AssemblyTitleAttribute("cancionito")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
