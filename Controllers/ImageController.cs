@@ -29,10 +29,27 @@ public class ImageController : ControllerBase {
     }
 
     [HttpPost]
+
     public ActionResult<Image> NewImage(ImageDTO img) {
-      _cloudinaryService.AddToCloudinary(img.Url);
-      Image _img = _imageService.Create(img);
-      return CreatedAtAction(nameof(GetById), new { idSong = _img.SongId, idInternal = _img.InternalId}, _img);
+    if (img == null || string.IsNullOrEmpty(img.Url)) {
+        return BadRequest("La URL de la imagen no puede estar vacía.");
+    }
+
+    // Subir la imagen a Cloudinary
+    var new_url = _cloudinaryService.AddToCloudinary(img.Url);
+
+    // Crear el nuevo registro de imagen con la URL generada por Cloudinary
+    var newImage = new ImageDTO(){
+        InternalId = img.InternalId,
+        SongId = img.SongId,
+        Url = new_url
+    };
+
+    // Guardar la imagen en la base de datos
+    Image _img = _imageService.Create(newImage);
+
+    // Retornar la respuesta con la URL de la imagen subida a Cloudinary
+    return CreatedAtAction(nameof(GetById), new { idSong = _img.SongId, idInternal = _img.InternalId}, _img);
     }
 
     [HttpPut("{idSong}/{idInternal}")]
