@@ -4,39 +4,43 @@ using CloudinaryDotNet.Actions;
 public class CloudinaryService : ICloudinaryService {
     private readonly Cloudinary _cloudinary;
 
-    public CloudinaryService(Cloudinary cloudinary) {
-        _cloudinary = cloudinary;
+    public CloudinaryService() {
+        _cloudinary = new Cloudinary();
     }
 
-    public string AddToCloudinary(string imageUrl) {
-        var uploadParams = new ImageUploadParams {
-            File = new FileDescription(imageUrl) // Subir la imagen desde la URL proporcionada
+    public async Task<string> UploadImageAsync(string imageUrl) {
+        var uploadParams = new ImageUploadParams() {
+            File = new FileDescription(imageUrl),
+            Folder = "images", // Opcional: especificar una carpeta en Cloudinary
         };
 
-        var uploadResult = _cloudinary.Upload(uploadParams);
+        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
-        // Retornar la nueva URL de la imagen alojada en Cloudinary
-        return uploadResult?.SecureUrl?.ToString();
+        if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK) {
+            return uploadResult.SecureUrl.ToString();
+        }
+        else {
+            throw new Exception("Error al subir la imagen a Cloudinary: " + uploadResult.Error.Message);
+        }
     }
     
-    public string DeleteFromCloudinary(string imageUrl) {
+    public async Task<string> DeleteFromCloudinary(string imageUrl) {
     // Extraemos el public_id desde la URL usando nuestra función personalizada
-    var publicId = ExtractPublicIdFromUrl(imageUrl);
+    var publicId = "images/" + ExtractPublicIdFromUrl(imageUrl);
 
     var deleteParams = new DeletionParams(publicId);
 
     // Ejecutamos la eliminación de la imagen de forma sincrónica
-    var deleteResult = _cloudinary.Destroy(deleteParams);
+    var deleteResult = await _cloudinary.DestroyAsync(deleteParams);
 
-    if (deleteResult.StatusCode == System.Net.HttpStatusCode.OK) {
-        return "Imagen eliminada exitosamente de Cloudinary.";
+    if (deleteResult.Result == "ok") {
+    return "Imagen eliminada exitosamente de Cloudinary.";
     }
 
     throw new Exception("Error al eliminar la imagen de Cloudinary.");
     }
     public string UploadImage(string? imageUrl) {
-    var uploadParams = new ImageUploadParams()
-    {
+    var uploadParams = new ImageUploadParams() {
         File = new FileDescription(imageUrl)
     };
 
