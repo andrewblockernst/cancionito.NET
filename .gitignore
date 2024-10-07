@@ -4,8 +4,4 @@ bin
 
 .env
 appsettings.json
-<<<<<<< HEAD
 launchSettings.json
-=======
-launchSettings.json
->>>>>>> 1af13deb4ede78e07794981e7c613d9c59b922ec
