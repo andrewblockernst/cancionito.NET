@@ -24,7 +24,7 @@ public class CloudinaryService : ICloudinaryService {
         }
     }
     
-    public async Task<string> DeleteFromCloudinary(string imageUrl) {
+    public async Task<string> DeleteFromCloudinaryAsync(string imageUrl) {
     // Extraemos el public_id desde la URL usando nuestra función personalizada
     var publicId = "images/" + ExtractPublicIdFromUrl(imageUrl);
 

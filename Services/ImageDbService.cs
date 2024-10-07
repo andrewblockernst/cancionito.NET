@@ -39,7 +39,7 @@ public class ImageDbService : IImageService {
         if (img is null) return "Image not found";
 
         try {
-            var response = await _cloudinaryService.DeleteFromCloudinary(img.Url);
+            var response = await _cloudinaryService.DeleteFromCloudinaryAsync(img.Url);
             _context.Images.Remove(img);
             await _context.SaveChangesAsync();
             return response;
