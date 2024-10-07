@@ -16,4 +16,4 @@ WORKDIR /app
 COPY --from=build /app/out .
 
 # Comando de inicio
-ENTRYPOINT ["dotnet", "NombreDeTuApp.dll"]
+ENTRYPOINT ["dotnet", "Cancionito.dll"]
