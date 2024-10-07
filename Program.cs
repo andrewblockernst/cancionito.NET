@@ -21,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Inyección de dependencias
 builder.Services.AddSingleton(cloudinary); // Inyecta la instancia de Cloudinary
-builder.Services.AddScoped<ICloudinaryPeronService, CloudinaryPeronService>(); // Inyecta el servicio CloudinaryService
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>(); // Inyecta el servicio CloudinaryService
 
 //===========================
 // Add services to the container.
