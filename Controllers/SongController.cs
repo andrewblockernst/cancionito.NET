@@ -31,7 +31,7 @@ public class SongsController : ControllerBase {
   }
 
   [HttpPost]
-  public ActionResult<Song> NewSong(Song s) {
+  public ActionResult<Song> NewSong(SongDTO s) {
     Song _s = _songsService.Create(s);
     //Devuelvo el resultado de llamar al metodo GetById pasando como parametro el Id del nuevo autor
     return CreatedAtAction(nameof(GetById), new {id = _s.Id}, _s);

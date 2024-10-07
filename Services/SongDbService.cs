@@ -5,8 +5,10 @@ public class SongDbService : ISongService {
   public SongDbService(CancionitoContext context) {
     _context = context;
   }
-    public Song Create(Song s) {
-        Song NewSong = new Song(s.Title);
+    public Song Create(SongDTO s) {
+        var NewSong = new Song(){
+            Title = s.Title
+        };
         _context.Songs.Add(NewSong);
         _context.SaveChanges();
         return NewSong;
@@ -36,7 +38,9 @@ public class SongDbService : ISongService {
         return s;
     }
     public IEnumerable<Image> GetImages(int id) {
-        Song s = _context.Songs.FirstOrDefault(x => x.Id == id);
-        return s.Images;
+        Song s = _context.Songs
+        .Include(song => song.Images)  // Incluye las imágenes relacionadas
+        .FirstOrDefault(x => x.Id == id);
+        return s?.Images ??  new List<Image>();
     }
 }
