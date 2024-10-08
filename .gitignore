@@ -3,5 +3,4 @@ obj
 bin
 
 .env
-appsettings.json
 launchSettings.json
