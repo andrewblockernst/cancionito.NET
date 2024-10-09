@@ -12,8 +12,13 @@ CREATE TABLE Images (
 );*/
 
 
+-- Limpiar la tabla Songs y reiniciar el ID autoincremental
+--DELETE FROM Songs; 
+--DELETE FROM sqlite_sequence WHERE name='Songs';
+
+--SELECT * FROM Songs;
+--SELECT * FROM Images;
 
 
-SELECT * FROM Songs;
-SELECT * FROM Images;
-
+--DELETE FROM Songs;
+--DELETE FROM Images;
