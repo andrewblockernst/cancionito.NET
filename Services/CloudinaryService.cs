@@ -9,18 +9,45 @@ public class CloudinaryService : ICloudinaryService {
     }
 
     public async Task<string> UploadImageAsync(string imageUrl) {
-        var uploadParams = new ImageUploadParams() {
-            File = new FileDescription(imageUrl),
-            Folder = "images", // Opcional: especificar una carpeta en Cloudinary
-        };
+        using (var handler = new HttpClientHandler()){
+        handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("ngrok-skip-browser-warning", "true");
+                var response = await client.GetAsync(imageUrl);
 
-        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                if (response.IsSuccessStatusCode)
+                {
+                    var imageBytes = await response.Content.ReadAsByteArrayAsync();
+                    // Guardar la imagen en un archivo temporal o memoria
+                    var tempFilePath = Path.GetTempFileName();
+                    await File.WriteAllBytesAsync(tempFilePath, imageBytes);
 
-        if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK) {
-            return uploadResult.SecureUrl.ToString();
-        }
-        else {
-            throw new Exception("Error al subir la imagen a Cloudinary: " + uploadResult.Error.Message);
+                    // Subir el archivo descargado a Cloudinary
+                    var uploadParams = new ImageUploadParams()
+                    {
+                        File = new FileDescription(tempFilePath),
+                        Folder = "images",
+                    };
+                    var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                    
+                    // Eliminar el archivo temporal después de la subida
+                    File.Delete(tempFilePath);
+
+                    if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        return uploadResult.SecureUrl.ToString();
+                    }
+                    else
+                    {
+                        throw new Exception("Error al subir la imagen a Cloudinary: " + uploadResult.Error.Message);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Error al descargar la imagen de la URL proporcionada.");
+                }
+            }
         }
     }
     
