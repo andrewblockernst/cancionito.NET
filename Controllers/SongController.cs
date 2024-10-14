@@ -30,6 +30,26 @@ public class SongsController : ControllerBase {
     return Ok(s);
   }
 
+  [HttpGet("count")]
+  public IActionResult GetSongCountAndList() {
+      int count = _songsService.GetSongCount();
+      string message = $"Hay {count} canciones subidas a 'cancionitodb' (base de datos).";
+      
+      //LISTA DE CANCIONES CON ID Y TITULO
+      var songList = _songsService.GetAll()
+          .Select(s => new SongDetailDTO { Id = s.Id, Title = s.Title })
+          .ToList();
+
+      //OBJETO DE RESPUESTA
+      var response = new SongResponse {
+          Message = message,
+          Songs = songList
+      };
+
+      return Ok(response);
+  }
+
+
   [HttpPost]
   public ActionResult<Song> NewSong(SongDTO s) {
     Song _s = _songsService.Create(s);
