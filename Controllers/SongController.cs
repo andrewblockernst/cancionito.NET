@@ -52,9 +52,16 @@ public class SongsController : ControllerBase {
 
   [HttpPost]
   public ActionResult<Song> NewSong(SongDTO s) {
-    Song _s = _songsService.Create(s);
-    //Devuelvo el resultado de llamar al metodo GetById pasando como parametro el Id del nuevo autor
-    return CreatedAtAction(nameof(GetById), new {id = _s.Id}, _s);
+      //VALIDA MODELO DE DATOS
+      if (!ModelState.IsValid) {
+          return BadRequest(ModelState); 
+      }
+      try {
+          Song newSong = _songsService.Create(s);
+          return CreatedAtAction(nameof(GetById), new { id = newSong.Id }, newSong);
+      } catch (Exception ex) {
+          return StatusCode(500, "Error al crear la canción: " + ex.Message);
+      }
   }
 
   [HttpDelete("{id}")]

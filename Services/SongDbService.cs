@@ -6,15 +6,24 @@ public class SongDbService : ISongService {
     _context = context;
   }
     public Song Create(SongDTO s) {
-        var NewSong = new Song(){
+    try {
+        //NUEVO OBJETO SONG Y PASA AL DTO POR EL TITULO
+        var newSong = new Song {
             Title = s.Title
         };
-        _context.Songs.Add(NewSong);
+
+        //AGREGA AL CONTEXT Y GUARDA LOS CAMBIOS
+        _context.Songs.Add(newSong);
         _context.SaveChanges();
-        return NewSong;
+        
+        //DEVUELVE LA CANCION DE MANERA AUTOINCREMENTAL
+        return newSong;
+    } catch (Exception ex) {
+        throw new Exception("Error al guardar la canción en la base de datos: " + ex.Message);
     }
-    public void Delete(int id)
-{
+    }
+
+    public void Delete(int id) {
     Song? s = _context.Songs.Find(id);
     if (s is not null)
     {
@@ -25,7 +34,7 @@ public class SongDbService : ISongService {
         _context.Songs.Remove(s);
         _context.SaveChanges();
     }
-}
+    }
     public IEnumerable<Song> GetAll() {
         return _context.Songs; 
     }
