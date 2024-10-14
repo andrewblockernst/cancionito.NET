@@ -43,4 +43,7 @@ public class SongDbService : ISongService {
         .FirstOrDefault(x => x.Id == id);
         return s?.Images ??  new List<Image>();
     }
+    public int GetSongCount() {
+    return _context.Songs.Count();
+    }
 }

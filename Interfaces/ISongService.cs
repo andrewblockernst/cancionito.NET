@@ -5,4 +5,5 @@ public interface ISongService {
   public void Delete(int id);
   public Song? Update(int id, Song s);
   public IEnumerable<Image> GetImages(int id);
+  public int GetSongCount();
 }
