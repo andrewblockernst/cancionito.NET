@@ -22,7 +22,7 @@ COPY /Data/cancionito.db /cancionito/Data/cancionito.db
 
 
 # Asegurarse de que la carpeta Data exista (por si no existe en la imagen base)
-RUN mkdir -p ./Data
+#RUN mkdir -p ./Data
 
 # Exponer el puerto en el que escucha la aplicación
 EXPOSE 80
