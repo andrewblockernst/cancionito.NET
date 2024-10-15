@@ -18,8 +18,7 @@ WORKDIR /cancionito
 COPY --from=build-env /cancionito/out ./
 
 # Copiar la base de datos SQLite
-COPY /Data/cancionito.db /cancionito/Data/cancionito.db
-
+COPY Data/cancionito.db /cancionito/Data/cancionito.db
 
 # Asegurarse de que la carpeta Data exista (por si no existe en la imagen base)
 #RUN mkdir -p ./Data
@@ -31,4 +30,5 @@ EXPOSE 80
 RUN ls /cancionito/Data
 
 # Ejecutar migraciones y luego iniciar la aplicación
-ENTRYPOINT ["sh", "-c", "exec dotnet Cancionito.dll"]
+ENTRYPOINT ["sh", "-c", "dotnet ef database update && exec dotnet Cancionito.dll"]
+
