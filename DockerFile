@@ -18,5 +18,5 @@ COPY --from=build-env /cancionito/out ./
 # Exponer el puerto en el que escucha la aplicación
 EXPOSE 80
 
-# Comando para ejecutar la aplicación
-ENTRYPOINT ["dotnet", "Cancionito.dll"]
+# Ejecutar migraciones y luego iniciar la aplicación
+ENTRYPOINT ["sh", "-c", "dotnet ef database update && exec dotnet Cancionito.dll"]
