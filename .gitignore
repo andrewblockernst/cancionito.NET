@@ -1,6 +1,2 @@
 .vscode
-obj
-bin
-
 .env
-launchSettings.json

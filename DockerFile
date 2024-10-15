@@ -19,4 +19,4 @@ COPY --from=build-env /cancionito/out ./
 EXPOSE 80
 
 # Ejecutar migraciones y luego iniciar la aplicación
-ENTRYPOINT ["sh", "-c", "dotnet ef database update && exec dotnet Cancionito.dll"]
+ENTRYPOINT ["sh", "-c", "exec dotnet Cancionito.dll"]
