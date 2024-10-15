@@ -13,7 +13,15 @@ RUN dotnet publish -c Release -o out
 # Usar una imagen base de .NET Runtime para ejecutar la aplicación
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /cancionito
+
+# Copiar los archivos publicados desde la etapa de construcción
 COPY --from=build-env /cancionito/out ./
+
+# Copiar la base de datos SQLite
+COPY ./Data/cancionito.db ./Data/cancionito.db
+
+# Asegurarse de que la carpeta Data exista (por si no existe en la imagen base)
+RUN mkdir -p ./Data
 
 # Exponer el puerto en el que escucha la aplicación
 EXPOSE 80
