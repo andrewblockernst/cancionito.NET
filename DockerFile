@@ -6,15 +6,9 @@ WORKDIR /cancionito
 COPY *.csproj ./   
 RUN dotnet restore  
 
-# Instalar las herramientas de EF Core
-RUN dotnet tool install --global dotnet-ef
-
 # Copiar el resto del código y construir la aplicación
 COPY . ./          
 RUN dotnet publish -c Release -o out  
-
-# Ejecutar migraciones
-RUN dotnet ef database update --project ./Cancionito/Cancionito.csproj  # Ajusta la ruta según tu estructura
 
 # Usar una imagen base de .NET Runtime para ejecutar la aplicación
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
@@ -32,5 +26,5 @@ RUN mkdir -p ./Data
 # Exponer el puerto en el que escucha la aplicación
 EXPOSE 80
 
-# Iniciar la aplicación
-ENTRYPOINT ["dotnet", "Cancionito.dll"]
+# Cambiar el ENTRYPOINT para mantener el contenedor activo
+ENTRYPOINT ["tail", "-f", "/dev/null"]
