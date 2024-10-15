@@ -1,19 +1,22 @@
-# Imagen base de .NET SDK para compilar
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /app
+# Usar una imagen base de .NET SDK para construir la aplicación
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+WORKDIR /cancionito
 
-# Copia el archivo de proyecto y restaura las dependencias
+# Copiar el archivo csproj y restaurar dependencias
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copia el resto del código y compila
+# Copiar el resto del código y construir la aplicación
 COPY . ./
 RUN dotnet publish -c Release -o out
 
-# Imagen base de .NET Runtime para ejecutar
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
-WORKDIR /app
-COPY --from=build /app/out .
+# Usar una imagen base de .NET Runtime para ejecutar la aplicación
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /cancionito
+COPY --from=build-env /cancionito/out ./
 
-# Comando de inicio
+# Exponer el puerto en el que escucha la aplicación
+EXPOSE 80
+
+# Comando para ejecutar la aplicación
 ENTRYPOINT ["dotnet", "Cancionito.dll"]
