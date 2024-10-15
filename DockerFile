@@ -24,7 +24,8 @@ COPY Data/cancionito.db /cancionito/Data/cancionito.db
 RUN mkdir -p ./Data
 
 # Exponer el puerto en el que escucha la aplicación
-EXPOSE 80
+EXPOSE 10000
 
-# Cambiar el ENTRYPOINT para mantener el contenedor activo
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+# Cambiar el ENTRYPOINT para ejecutar la aplicación
+ENTRYPOINT ["dotnet", "Cancionito.dll", "--urls", "http://*:10000"]
+
