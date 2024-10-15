@@ -28,7 +28,7 @@ RUN mkdir -p ./Data
 EXPOSE 80
 
 # Verificar que la base de datos se haya copiado correctamente
-RUN ls /cancionito/data
+RUN ls /cancionito/Data
 
 # Ejecutar migraciones y luego iniciar la aplicación
 ENTRYPOINT ["sh", "-c", "exec dotnet Cancionito.dll"]
