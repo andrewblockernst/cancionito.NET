@@ -3,32 +3,34 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /cancionito
 
 # Copiar el archivo csproj y restaurar dependencias
-COPY *.csproj ./
-RUN dotnet restore
+COPY *.csproj ./   
+RUN dotnet restore  
+
+# Instalar las herramientas de EF Core
+RUN dotnet tool install --global dotnet-ef
 
 # Copiar el resto del código y construir la aplicación
-COPY . ./
-RUN dotnet publish -c Release -o out
+COPY . ./          
+RUN dotnet publish -c Release -o out  
+
+# Ejecutar migraciones
+RUN dotnet ef database update --project ./Cancionito/Cancionito.csproj  # Ajusta la ruta según tu estructura
 
 # Usar una imagen base de .NET Runtime para ejecutar la aplicación
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /cancionito
 
 # Copiar los archivos publicados desde la etapa de construcción
-COPY --from=build-env /cancionito/out ./
+COPY --from=build-env /cancionito/out ./  
 
 # Copiar la base de datos SQLite
-COPY Data/cancionito.db /cancionito/Data/cancionito.db
+COPY Data/cancionito.db /cancionito/Data/cancionito.db  
 
-# Asegurarse de que la carpeta Data exista (por si no existe en la imagen base)
-#RUN mkdir -p ./Data
+# Asegurarse de que la carpeta Data exista
+RUN mkdir -p ./Data
 
 # Exponer el puerto en el que escucha la aplicación
 EXPOSE 80
 
-# Verificar que la base de datos se haya copiado correctamente
-RUN ls /cancionito/Data
-
-# Ejecutar migraciones y luego iniciar la aplicación
-ENTRYPOINT ["sh", "-c", "dotnet ef database update && exec dotnet Cancionito.dll"]
-
+# Iniciar la aplicación
+ENTRYPOINT ["dotnet", "Cancionito.dll"]
