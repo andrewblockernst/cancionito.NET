@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cancionito
+    env: docker
+    plan: free
+    buildCommand: "dotnet publish -c Release -o out"
+    startCommand: "dotnet /cancionito/out/Cancionito.dll --urls http://0.0.0.0:10000"
+    mounts:
+      - path: /cancionito/Data
+        persistentVolume: true
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
