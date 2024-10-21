@@ -36,7 +36,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     // Configuración básica de Swagger
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Tu API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Cancionito", Version = "v1" });
 
     // Configuración de seguridad para JWT
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -68,6 +68,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSqlite<CancionitoContext>(builder.Configuration.GetConnectionString("cnCancionito"));
 builder.Services.AddScoped<ISongService, SongDbService>();
 builder.Services.AddScoped<IImageService, ImageDbService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+
 
 //-------------------AUTENTICACIÓN Y AUTORIZACIÓN---------------------//
 // Configurar el contexto para Identity (autenticación y autorización)
@@ -103,18 +105,15 @@ builder.Services.AddAuthentication(options =>
 var app = builder.Build();
 
 // Ejecutar migraciones automáticas al iniciar la aplicación
-using (var scope = app.Services.CreateScope())
-{
+using (var scope = app.Services.CreateScope()) {
     var dbContext = scope.ServiceProvider.GetRequiredService<CancionitoContext>();
     dbContext.Database.Migrate(); // Ejecuta las migraciones pendientes
 }
 
-// Configure the HTTP request pipeline.
-/*
-if (app.Environment.IsDevelopment()) {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}*/
+using (var scope = app.Services.CreateScope()) {
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate(); // Ejecuta las migraciones pendientes
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();

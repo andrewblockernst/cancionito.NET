@@ -88,29 +88,4 @@ public class AccountController : ControllerBase
         }
         return Unauthorized();
     }
-
-    // Asignar un rol a un usuario
-    [HttpPost("asignar-rol")]
-    public async Task<IActionResult> AsignarRol([FromBody] RoleAssignmentDTO model)
-    {
-        var user = await _userManager.FindByNameAsync(model.Username);
-        if (user == null)
-        {
-            return NotFound(new { Message = "Usuario no encontrado" });
-        }
-
-        var roleExists = await _userManager.IsInRoleAsync(user, model.Role);
-        if (roleExists)
-        {
-            return BadRequest(new { Message = "El usuario ya tiene este rol" });
-        }
-
-        var result = await _userManager.AddToRoleAsync(user, model.Role);
-        if (result.Succeeded)
-        {
-            return Ok(new { Message = "Rol asignado correctamente" });
-        }
-
-        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error al asignar el rol" });
-    }
 }

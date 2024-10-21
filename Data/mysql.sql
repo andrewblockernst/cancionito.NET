@@ -16,8 +16,21 @@ CREATE TABLE Images (
 --DELETE FROM Songs; 
 --DELETE FROM sqlite_sequence WHERE name='Songs';
 
-SELECT * FROM Songs;
-SELECT * FROM Images;
+--SELECT * FROM Songs;
+--SELECT * FROM Images;
+
+-- LISTAR TABLAS
+--SELECT name FROM sqlite_master WHERE type='table';
+
+SELECT * FROM AspNetRoles;
+SELECT * FROM AspNetUsers;
+SELECT * FROM AspNetUserRoles;
+SELECT * FROM AspNetUserClaims;
+SELECT * FROM AspNetUserLogins;
+SELECT * FROM AspNetRoleClaims;
+SELECT * FROM AspNetUserTokens;
+
+
 
 
 --DELETE FROM Songs;
