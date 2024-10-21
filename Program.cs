@@ -68,8 +68,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSqlite<CancionitoContext>(builder.Configuration.GetConnectionString("cnCancionito"));
 builder.Services.AddScoped<ISongService, SongDbService>();
 builder.Services.AddScoped<IImageService, ImageDbService>();
-builder.Services.AddScoped<IRoleService, RoleService>();
-
 
 //-------------------AUTENTICACIÓN Y AUTORIZACIÓN---------------------//
 // Configurar el contexto para Identity (autenticación y autorización)

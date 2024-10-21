@@ -3,22 +3,26 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/account")]
 public class AccountController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
 
     public AccountController(
         UserManager<ApplicationUser> userManager, 
+        RoleManager<IdentityRole> roleManager, 
         SignInManager<ApplicationUser> signInManager, 
         IConfiguration configuration)
     {
         _userManager = userManager;
+        _roleManager = roleManager;
         _signInManager = signInManager;
         _configuration = configuration;
     }
@@ -88,4 +92,81 @@ public class AccountController : ControllerBase
         }
         return Unauthorized();
     }
+
+    // Asignar un rol a un usuario
+    [HttpPost("asignar-rol")]
+    public async Task<IActionResult> AsignarRol([FromBody] RoleAssignmentDTO model)
+    {
+        var user = await _userManager.FindByNameAsync(model.Username);
+        if (user == null)
+        {
+            return NotFound(new { Message = "Usuario no encontrado" });
+        }
+
+        var roleExists = await _userManager.IsInRoleAsync(user, model.Role);
+        if (roleExists)
+        {
+            return BadRequest(new { Message = "El usuario ya tiene este rol" });
+        }
+
+        var result = await _userManager.AddToRoleAsync(user, model.Role);
+        if (result.Succeeded)
+        {
+            return Ok(new { Message = "Rol asignado correctamente" });
+        }
+
+        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error al asignar el rol" });
+    }
+
+    [HttpGet("roles")]
+    public async Task<IActionResult> GetRoles(){
+        List<IdentityRole> roles = await _roleManager.Roles.ToListAsync();
+        return Ok(roles);
+    }
+
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers(){
+        List<ApplicationUser> users = await _userManager.Users.ToListAsync();
+        return Ok(users);
+    }
+
+    [HttpGet("/users/{id}/roles")]
+    public async Task<IActionResult> GetRoles(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user != null)
+        {
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+            return Ok(roles);
+        }
+        return BadRequest();
+    }
+
+    [HttpPost("role")]
+    public async Task<IActionResult> CreateRole([FromBody] string roleName)
+    {
+        if (string.IsNullOrWhiteSpace(roleName))
+        {
+            return BadRequest("El nombre del rol no puede estar vacío.");
+        }
+
+        // Verifica si el rol ya existe
+        var roleExists = await _roleManager.RoleExistsAsync(roleName);
+        if (roleExists)
+        {
+            return Conflict($"El rol '{roleName}' ya existe.");
+        }
+
+        // Crea un nuevo rol
+        var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
+
+        if (result.Succeeded)
+        {
+            return Ok($"El rol '{roleName}' ha sido creado exitosamente.");
+        }
+
+        // Si algo falla, devuelve los errores
+        return BadRequest(result.Errors);
+    }
+
 }
