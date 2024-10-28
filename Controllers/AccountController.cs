@@ -45,8 +45,7 @@ public class AccountController : ControllerBase
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
-        if (!result.Succeeded)
-        {
+        if (!result.Succeeded) {
             return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error al crear usuario" });
         }
 
@@ -55,37 +54,37 @@ public class AccountController : ControllerBase
 
     // Login de usuarios y generación de JWT
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDTO model)
-    {
+    public async Task<IActionResult> Login([FromBody] LoginDTO model) {
         var user = await _userManager.FindByNameAsync(model.Username);
-        if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
-        {
+        if (user != null && await _userManager.CheckPasswordAsync(user, model.Password)) {
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var authClaims = new List<Claim>
-            {
+            var authClaims = new List<Claim> {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // Identificador único para el token
             };
 
             // Añadir los roles del usuario como claims
-            foreach (var role in userRoles)
-            {
+            foreach (var role in userRoles) {
                 authClaims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
+
+            var tokenExpiry = userRoles.Any(role => role.Equals("Bot", StringComparison.OrdinalIgnoreCase))
+                ? DateTime.Now.AddYears(100) // Token casi sin expiración
+                : DateTime.Now.AddHours(3); // Expiración normal de 3 horas
+
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
-                expires: DateTime.Now.AddHours(3),
+                expires: tokenExpiry, // No establece expiración si el usuario tiene el rol "Bot"
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
 
-            return Ok(new
-            {
+            return Ok(new {
                 token = new JwtSecurityTokenHandler().WriteToken(token),
                 expiration = token.ValidTo
             });
@@ -167,6 +166,23 @@ public class AccountController : ControllerBase
 
         // Si algo falla, devuelve los errores
         return BadRequest(result.Errors);
+    }
+    [HttpDelete("user/{id}")]
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+        {
+            return NotFound(new { Message = "Usuario no encontrado" });
+        }
+
+        var result = await _userManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            return Ok(new { Message = "Usuario eliminado correctamente" });
+        }
+
+        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error al eliminar el usuario" });
     }
 
 }
