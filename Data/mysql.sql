@@ -16,8 +16,8 @@ CREATE TABLE Images (
 --DELETE FROM Songs; 
 --DELETE FROM sqlite_sequence WHERE name='Songs';
 
---SELECT * FROM Songs;
---SELECT * FROM Images;
+SELECT * FROM Songs;
+SELECT * FROM Images;
 
 -- LISTAR TABLAS
 --SELECT name FROM sqlite_master WHERE type='table';

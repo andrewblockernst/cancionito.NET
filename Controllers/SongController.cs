@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-    
+
+[Authorize(Roles = "admin,bot")] // Permite acceso a usuarios con el rol "admin" o "bot"
 [ApiController]
 [Route("api/songs")]
 public class SongsController : ControllerBase {

@@ -65,7 +65,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddSqlite<CancionitoContext>(builder.Configuration.GetConnectionString("cnCancionito"));
+builder.Services.AddSqlite<CancionitoContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
 builder.Services.AddScoped<ISongService, SongDbService>();
 builder.Services.AddScoped<IImageService, ImageDbService>();
 
@@ -108,13 +108,15 @@ using (var scope = app.Services.CreateScope()) {
     dbContext.Database.Migrate(); // Ejecuta las migraciones pendientes
 }
 
-using (var scope = app.Services.CreateScope()) {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate(); // Ejecuta las migraciones pendientes
-}
+// using (var scope = app.Services.CreateScope()) {
+//     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//     dbContext.Database.Migrate(); // Ejecuta las migraciones pendientes
+// }
 
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment()) {
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 app.MapControllers();
