@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "cancionito/1.0.0": {
+      "Cancionito/1.0.0": {
         "dependencies": {
           "CloudinaryDotNet": "1.26.2",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.10",
@@ -20,7 +20,7 @@
           "dotenv.net": "3.2.1"
         },
         "runtime": {
-          "cancionito.dll": {}
+          "Cancionito.dll": {}
         }
       },
       "CloudinaryDotNet/1.26.2": {
@@ -1302,7 +1302,7 @@
     }
   },
   "libraries": {
-    "cancionito/1.0.0": {
+    "Cancionito/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
