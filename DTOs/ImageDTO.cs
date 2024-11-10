@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 public class ImageDTO
 {
-    [Required(ErrorMessage = "El campo de Id interna es requerido.")]
+    [Required(ErrorMessage = "The internal ID field is required.")]
     public int? InternalId { get; set; }
-    [Required(ErrorMessage = "El campo de Id de la canción es requerido.")]
+    [Required(ErrorMessage = "The song ID field is required.")]
     public int? SongId { get; set; }
-    [Required(ErrorMessage = "El campo de la url de la canción es requerido.")]
+    [Required(ErrorMessage = "The song URL field is required.")]
     public string? Url { get; set; }
 }

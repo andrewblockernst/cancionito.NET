@@ -1,18 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 
 public class SongDTO {
-    [Required(ErrorMessage = "El campo Titulo es requerido.")]
+    [Required(ErrorMessage = "The Title field is required.")]
     public string? Title { get; set; }
 
 }
 
-//DTO QUE DEVUELVE UNA LISTA DE CANCIONES CON ID Y TITULO EN UNA RESPUESTA JSON
+//DTO THAT RETURNS A LIST OF SONGS WITH ID AND TITLE IN A JSON RESPONSE
 public class SongResponse {
     public string Message { get; set; }
     public List<SongDetailDTO> Songs { get; set; }
 }
 
-//ATRIBUTOS DE LA CANCION QUE SE DEVUELVEN EN LA RESPUESTA JSON
+//SONG ATTRIBUTES RETURNED IN THE JSON RESPONSE
 public class SongDetailDTO {
     public int Id { get; set; }
     public string Title { get; set; }

@@ -16,6 +16,7 @@ public class AccountController : ControllerBase
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
 
+    //CONSTRUCTOR THAT INYECTS THE USERMANAGER, ROLEMANAGER, SIGNINMANAGER AND ALL THE MANAGER OF THE USERS
     public AccountController(
         UserManager<ApplicationUser> userManager, 
         RoleManager<IdentityRole> roleManager, 
@@ -28,16 +29,18 @@ public class AccountController : ControllerBase
         _configuration = configuration;
     }
 
-    // Registro de usuarios
+    //REGISTRATION OF A NEW USER
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO model)
     {
+        //VERIFICATION TO CHECK IF THE USER ALREADY EXISTS
         var userExists = await _userManager.FindByNameAsync(model.Username);
         if (userExists != null)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "El usuario ya existe" });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "The user already exist." });
         }
 
+        //NEW USER CREATION
         var user = new ApplicationUser
         {
             UserName = model.Username,
@@ -45,42 +48,53 @@ public class AccountController : ControllerBase
             SecurityStamp = Guid.NewGuid().ToString()
         };
 
+        //CREATION OF THE USER
         var result = await _userManager.CreateAsync(user, model.Password);
         if (!result.Succeeded) {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error al crear usuario" });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error creating an user." });
         }
 
-        return Ok(new { Message = "Usuario creado satisfactoriamente" });
+        return Ok(new { Message = "User succesfully created." });
     }
 
-    // Login de usuarios y generación de JWT
+    //LOGIN OF A USER WITH USERNAME AND PASSWORD (GENERATING A TOKEN) 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO model) {
+
         var user = await _userManager.FindByNameAsync(model.Username);
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password)) {
             var userRoles = await _userManager.GetRolesAsync(user);
 
+            //IT DEFINES THE CLAIMS OF THE USER, INCLUDING THE NAME AND THE UNIQUE IDENTIFIER OF THE TOKEN (ROLE)
             var authClaims = new List<Claim> {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // Identificador único para el token
+                new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
             };
 
-            // Añadir los roles del usuario como claims
+            //ADD THE ROLES FOR THE USER AS CLAIMS
             foreach (var role in userRoles) {
                 authClaims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            //IT DEFINES THE KEY OF THE JWT
+            var jwtKey = _configuration["Jwt:Key"];
+            if (string.IsNullOrEmpty(jwtKey)) {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "JWT Key is not configured." });
+            }
 
+            //IT DEFINES THE SIGNING KEY OF THE JWT
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
+            //IT DEFINES THE EXPIRATION OF THE TOKEN, IF THE USER HAS THE ROLE "BOT" IT WILL NOT EXPIRE
             var tokenExpiry = userRoles.Any(role => role.Equals("Bot", StringComparison.OrdinalIgnoreCase))
-                ? DateTime.Now.AddYears(100) // Token casi sin expiración
-                : DateTime.Now.AddHours(3); // Expiración normal de 3 horas
+                ? DateTime.Now.AddYears(100) //LONG LIVE TO CancioNito (100 YEARS)
+                : DateTime.Now.AddHours(3); //NORMAL EXPIRATION OF THE TOKEN (3 HOURS - REST OF THE ROLES)
 
+            //CREATE AND DEFINES THE TOKEN WITH THE CLAIMS, THE EXPIRATION AND THE SIGNING CREDENTIALS
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
-                expires: tokenExpiry, // No establece expiración si el usuario tiene el rol "Bot"
+                expires: tokenExpiry, //EXPIRATION OF THE TOKEN, EXCEPTING THE ROLE "BOT"
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
@@ -93,49 +107,52 @@ public class AccountController : ControllerBase
         return Unauthorized();
     }
 
-    // Asignar un rol a un usuario
-    [HttpPost("asignar-rol")]
-    public async Task<IActionResult> AsignarRol([FromBody] RoleAssignmentDTO model)
-    {
+    //ASSIGNATION OF A ROLE TO A USER
+    [HttpPost("assign-role")]
+    public async Task<IActionResult> AsignarRol([FromBody] RoleAssignmentDTO model) {
+
+        //VERIFICATION OF THE USER
         var user = await _userManager.FindByNameAsync(model.Username);
-        if (user == null)
-        {
-            return NotFound(new { Message = "Usuario no encontrado" });
+        if (user == null) {
+            return NotFound(new { Message = "User not found." });
         }
 
+        //VERIFICATION OF THE ROLE
         var roleExists = await _userManager.IsInRoleAsync(user, model.Role);
-        if (roleExists)
-        {
-            return BadRequest(new { Message = "El usuario ya tiene este rol" });
+        if (roleExists) {
+            return BadRequest(new { Message = "The user already has this role." });
         }
 
+        //ASSIGNATION OF THE ROLE
         var result = await _userManager.AddToRoleAsync(user, model.Role);
-        if (result.Succeeded)
-        {
-            return Ok(new { Message = "Rol asignado correctamente" });
+        if (result.Succeeded) {
+            return Ok(new { Message = "Role assigned correctly." });
         }
-
-        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error al asignar el rol" });
+        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error assigning role." });
     }
 
     [HttpGet("roles")]
-    public async Task<IActionResult> GetRoles(){
+    public async Task<IActionResult> GetRoles() {
+
+        //GET ALL THE ROLES
         List<IdentityRole> roles = await _roleManager.Roles.ToListAsync();
         return Ok(roles);
     }
 
     [HttpGet("users")]
-    public async Task<IActionResult> GetUsers(){
+    public async Task<IActionResult> GetUsers() {
+
+        //GET ALL THE USERS
         List<ApplicationUser> users = await _userManager.Users.ToListAsync();
         return Ok(users);
     }
 
     [HttpGet("/users/{id}/roles")]
-    public async Task<IActionResult> GetRoles(string id)
-    {
+    public async Task<IActionResult> GetRoles(string id) {
+
+        //GET THE ROLES OF A USER
         var user = await _userManager.FindByIdAsync(id);
-        if (user != null)
-        {
+        if (user != null) {
             IList<string> roles = await _userManager.GetRolesAsync(user);
             return Ok(roles);
         }
@@ -143,47 +160,46 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("role")]
-    public async Task<IActionResult> CreateRole([FromBody] string roleName)
-    {
-        if (string.IsNullOrWhiteSpace(roleName))
-        {
-            return BadRequest("El nombre del rol no puede estar vacío.");
+    public async Task<IActionResult> CreateRole([FromBody] string roleName) {
+
+        //VERIFICATION OF THE ROLE NAME
+        if (string.IsNullOrWhiteSpace(roleName)) {
+            return BadRequest("The role name cannot be empty.");
         }
 
-        // Verifica si el rol ya existe
+        //VERIFICATION OF THE EXISTENCE OF THE ROLE
         var roleExists = await _roleManager.RoleExistsAsync(roleName);
-        if (roleExists)
-        {
-            return Conflict($"El rol '{roleName}' ya existe.");
+        if (roleExists) {
+            return Conflict($"The role '{roleName}' already exists.");
         }
 
-        // Crea un nuevo rol
+        //CREATION OF THE ROLE
         var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
 
-        if (result.Succeeded)
-        {
-            return Ok($"El rol '{roleName}' ha sido creado exitosamente.");
+        if (result.Succeeded) {
+            return Ok($"The role '{roleName}' already exists.");
         }
 
-        // Si algo falla, devuelve los errores
+        //IN CASE OF AN ERROR IN THE CREATION OF THE ROLE - INTERNAL SERVER ERROR (500)
         return BadRequest(result.Errors);
     }
+
     [HttpDelete("user/{id}")]
-    public async Task<IActionResult> DeleteUser(string id)
-    {
+    public async Task<IActionResult> DeleteUser(string id) {
+
+        //DELETE A USER
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound(new { Message = "Usuario no encontrado" });
+        if (user == null) {
+            return NotFound(new { Message = "User not found." });
         }
 
+        //DELETE THE USER
         var result = await _userManager.DeleteAsync(user);
-        if (result.Succeeded)
-        {
-            return Ok(new { Message = "Usuario eliminado correctamente" });
+        if (result.Succeeded) {
+            return Ok(new { Message = "Successfully deleted user." });
         }
 
-        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error al eliminar el usuario" });
+        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Error deleting user." });
     }
 
 }

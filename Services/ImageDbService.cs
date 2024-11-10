@@ -6,34 +6,38 @@ public class ImageDbService : IImageService {
         _context = context;
         _cloudinaryService = cloudinaryService;
     }
+
+    //CREATE AND SAVE A NEW IMAGE IN THE DATABASE AFTER UPLOADING IT TO Cloudinary
     public async Task<Image> Create(ImageDTO img) {
-    // Verificar si la canción existe en la base de datos
+    //CHECK IF THE SONG EXISTS IN THE DATABASE
     var song = _context.Songs.Find(img.SongId);
     if (song == null) {
         throw new Exception("Invalid SongId, song does not exist.");
     }
 
-    // Subir la imagen a Cloudinary
-    var new_url = await _cloudinaryService.UploadImageAsync(img.Url); //
+    //UPLOAD THE IMAGE TO Cloudinary
+    var new_url = await _cloudinaryService.UploadImageAsync(img.Url); 
 
-    // Verifica si la URL no es nula antes de guardar
+    //VERIFIES IF THE URL IS NULL OR EMPTY
     if (string.IsNullOrEmpty(new_url)) {
-        throw new Exception("La URL de Cloudinary es nula o vacía.");
+        throw new Exception("Cloudinary URL is null or empty.");
     }
 
-    // Crear la nueva imagen
+    //CREATE A NEW IMAGE OBJECT
     var NewImage = new Image(){
         InternalId = img.InternalId,
         SongId = img.SongId,
         Url = new_url 
     };
     
-    // Guardar la imagen en la base de datos
+    //SAVE THE IMAGE IN THE DATABASE
     _context.Images.Add(NewImage);
     await _context.SaveChangesAsync();
 
     return NewImage;
     }
+
+    //DELETE AN IMAGE BY ID AND INTERNAL ID FROM DATABASE AFTER DELETING IT FROM Cloudinary
     public async Task<string> Delete(int idInternal, int idSong) {
         Image? img = _context.Images.FirstOrDefault(x => x.InternalId == idInternal && x.SongId == idSong);
         if (img is null) return "Image not found";
@@ -43,18 +47,25 @@ public class ImageDbService : IImageService {
             _context.Images.Remove(img);
             await _context.SaveChangesAsync();
             return response;
-        } catch (Exception ex) {
-            // Manejo de errores y logging si es necesario
-            throw new Exception("Error al eliminar la imagen: " + ex.Message);
+        } 
+        catch (Exception ex) {
+            //TRY AND CATCH BLOCK TO HANDLE EXCEPTIONS
+            throw new Exception("Error deleting image: " + ex.Message);
     }
     }
+
+    //GET ALL IMAGES FROM THE DATABASE 
     public IEnumerable<Image> GetAll() {
         return _context.Images;
     }
+
+    //GET IMAGE BY ID AND INTERNAL ID FROM THE DATABASE 
     public Image? GetById(int idSong, int idInternal) {
         return _context.Images
         .SingleOrDefault(x => x.SongId == idSong && x.InternalId == idInternal);
     }
+
+    //UPDATE AN IMAGE BY ID AND INTERNAL ID IN THE DATABASE 
     public Image Update(int idInternal, int idSong, ImageDTO img) {
         var imageUpdate = _context.Images.FirstOrDefault(x => x.InternalId == idInternal && x.SongId == idSong);
         imageUpdate.InternalId = img.InternalId;
